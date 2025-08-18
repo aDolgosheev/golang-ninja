@@ -4,7 +4,7 @@ import "fmt"
 
 type Age int
 
-func(a Age) isAdult() bool {
+func (a Age) isAdult() bool {
 	return a >= 18
 }
 
@@ -40,9 +40,9 @@ func NewDumbDatabase() *DumbDatabase {
 
 func NewUser(name, sex string, age, weight, height int) User {
 	return User{
-		name: name,
-		sex: sex,
-		age: Age(age),
+		name:   name,
+		sex:    sex,
+		age:    Age(age),
 		weight: weight,
 		height: height,
 	}
@@ -64,5 +64,3 @@ func main() {
 	user1.printUserInfo()
 	user2.printUserInfo()
 }
-
-
