@@ -6,18 +6,30 @@ import (
 )
 
 func main() {
-	var msg chan string
-	fmt.Println(msg)
-
-	msg = make(chan string)
-	fmt.Println(msg)
+	message1 := make(chan string)
+	message2 := make(chan string)
 
 	go func() {
-		time.Sleep(2 * time.Second)
-		msg <- "Канал ниндзя"
+		for {
+			message1 <- "Канал 1. Прошло времени 200 мс."
+			time.Sleep(time.Millisecond * 200)
+		}
 	}()
 
-	// value := <-msg
-	// fmt.Println(value)
-	fmt.Println(<-msg)
+	go func() {
+		for {
+			message2 <- "Канал 2. Прошло времени 1 с."
+			time.Sleep(time.Second)
+		}
+	}()
+
+	for {
+		select {
+		case msg := <-message1:
+			fmt.Println(msg)
+		case msg := <-message2:
+			fmt.Println(msg)
+		default:
+		}
+	}
 }
