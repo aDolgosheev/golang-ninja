@@ -1,0 +1,4 @@
+ID: 791 | Email: user791@ninja.go
+Activity Log:
+0. [logged in] at 2025-09-29 15:00:10.8720404 +0300 MSK m=+0.014563101
+1. [delete record] at 2025-09-29 15:00:10.8720404 +0300 MSK m=+0.014563101
