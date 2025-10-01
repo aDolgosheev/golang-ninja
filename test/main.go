@@ -2,23 +2,29 @@ package main
 
 import (
 	"fmt"
-	"math"
 )
 
 func main() {
-	// объявите переменные x1, y1, x2, y2 типа float64
-	var x1, y1, x2, y2 float64
+	var text string
+	var width int
+	fmt.Scanf("%s %d", &text, &width)
 
-	// считываем числа из os.Stdin
-	// гарантируется, что значения корректные
-	// не меняйте этот блок
-	fmt.Scan(&x1, &y1, &x2, &y2)
+	// Возьмите первые `width` байт строки `text`,
+	// допишите в конце `...` и сохраните результат
+	// в переменную `res`
+	// ...
 
-	// рассчитайте d по формуле эвклидова расстояния
-	// используйте math.Pow(x, 2) для возведения в квардрат
-	// используйте math.Sqrt(x) для извлечения корня
-	d := math.Sqrt(math.Pow((x1-x2), 2) + math.Pow((y1-y2), 2))
+    bytes := []byte(text)
+	var res string
 
-	// выводим результат в os.Stdout
-	fmt.Println(d)
+
+	if len(bytes) <= width {
+		res = text
+	} else {
+		bytes = bytes[0:width]
+		res = string(bytes)
+		res = res + "..."
+	}
+    
+	fmt.Println(res)
 }
