@@ -1,30 +1,48 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
 )
 
-func main() {
-	var text string
-	var width int
-	fmt.Scanf("%s %d", &text, &width)
-
-	// Возьмите первые `width` байт строки `text`,
-	// допишите в конце `...` и сохраните результат
-	// в переменную `res`
-	// ...
-
-    bytes := []byte(text)
-	var res string
-
-
-	if len(bytes) <= width {
-		res = text
-	} else {
-		bytes = bytes[0:width]
-		res = string(bytes)
-		res = res + "..."
+func filter(predicate func(int) bool, iterable []int) []int {
+	// отфильтруйте `iterable` с помощью `predicate`
+	// и верните отфильтрованный срез
+	result := []int{}
+	for _, value := range iterable {
+		if predicate(value) {
+			result = append(result, value)
+		}
 	}
-    
+	return result
+}
+
+func main() {
+	src := readInput()
+	// отфильтруйте `src` так, чтобы остались только четные числа
+	// и запишите результат в `res`
+	// res := filter(...)
+	res := filter(func(n int) bool { return n%2 == 0 }, src)
+
 	fmt.Println(res)
+}
+
+// ┌─────────────────────────────────┐
+// │ не меняйте код ниже этой строки │
+// └─────────────────────────────────┘
+
+// readInput считывает целые числа из `os.Stdin`
+// и возвращает в виде среза
+// разделителем чисел считается пробел
+func readInput() []int {
+	var nums []int
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		num, _ := strconv.Atoi(scanner.Text())
+		nums = append(nums, num)
+	}
+	return nums
 }
