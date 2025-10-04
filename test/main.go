@@ -1,48 +1,21 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"strconv"
+    "fmt"
+    "os"
 )
 
-func filter(predicate func(int) bool, iterable []int) []int {
-	// отфильтруйте `iterable` с помощью `predicate`
-	// и верните отфильтрованный срез
-	result := []int{}
-	for _, value := range iterable {
-		if predicate(value) {
-			result = append(result, value)
-		}
-	}
-	return result
+// normalize нормализует значения, переданные в vals,
+// так чтобы их сумма была равна 1.
+func normalize(...) {
+    // ...
 }
 
 func main() {
-	src := readInput()
-	// отфильтруйте `src` так, чтобы остались только четные числа
-	// и запишите результат в `res`
-	// res := filter(...)
-	res := filter(func(n int) bool { return n%2 == 0 }, src)
-
-	fmt.Println(res)
-}
-
-// ┌─────────────────────────────────┐
-// │ не меняйте код ниже этой строки │
-// └─────────────────────────────────┘
-
-// readInput считывает целые числа из `os.Stdin`
-// и возвращает в виде среза
-// разделителем чисел считается пробел
-func readInput() []int {
-	var nums []int
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanWords)
-	for scanner.Scan() {
-		num, _ := strconv.Atoi(scanner.Text())
-		nums = append(nums, num)
-	}
-	return nums
+    a, b, c, d := 1.0, 2.0, 3.0, 4.0
+    normalize(&a, &b, &c, &d)
+    fmt.Println(a, b, c, d)
+    // 0.1 0.2 0.3 0.4
+    fmt.Println("PASS")
+    os.Exit(0)
 }
