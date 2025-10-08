@@ -1,131 +1,103 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-	"log"
-	"os"
-	"sort"
-	"strings"
+	"unicode"
+	"unicode/utf8"
 )
 
-// result представляет результат матча
-type result byte
+// validator проверяет строку на соответствие некоторому условию
+// и возвращает результат проверки
+type validator func(s string) bool
 
-// возможные результаты матча
-const (
-	win  result = 'W'
-	draw result = 'D'
-	loss result = 'L'
-)
-
-// team представляет команду
-type team byte
-
-// match представляет матч
-// содержит три поля:
-// - first (первая команда)
-// - second (вторая команда)
-// - result (результат матча)
-// например, строке BAW соответствует
-// first=B, second=A, result=W
-type match struct {
+// digits возвращает true, если s содержит хотя бы одну цифру
+// согласно unicode.IsDigit(), иначе false
+func digits(s string) bool {
 	// ...
-	first  team
-	second team
-	result result
-}
-
-// rating представляет турнирный рейтинг команд -
-// количество набранных очков по каждой команде
-type rating map[team]int
-
-// tournament представляет турнир
-type tournament []match
-
-// calcRating считает и возвращает рейтинг турнира
-func (trn *tournament) calcRating() rating {
-	r := make(rating)
-
-	for _, m := range *trn {
-		fmt.Println(m)
-		if _, exists := r[m.first]; !exists {
-			r[m.first] = 0
-		}
-		if _, exists := r[m.second]; !exists {
-			r[m.second] = 0
-		}
-		switch m.result {
-		case win:
-			r[m.first] += 3
-		case loss:
-			r[m.second] += 3
-		case draw:
-			r[m.first] += 1
-			r[m.second] += 1
+	for _, v := range s {
+		if unicode.IsDigit(v) {
+			return true
 		}
 	}
-	return r
+	return false
+}
+
+// letters возвращает true, если s содержит хотя бы одну букву
+// согласно unicode.IsLetter(), иначе false
+func letters(s string) bool {
+	// ...
+	for _, v := range s {
+		if unicode.IsLetter(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// minlen возвращает валидатор, который проверяет, что длина
+// строки согласно utf8.RuneCountInString() - не меньше указанной
+func minlen(length int) validator {
+	// ...
+	return func(s string) bool {
+		return utf8.RuneCountInString(s) >= length
+	}
+}
+
+// and возвращает валидатор, который проверяет, что все
+// переданные ему валидаторы вернули true
+func and(funcs ...validator) validator {
+	// ...
+	return func(s string) bool {
+		for _, f := range funcs {
+			if !f(s) {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+// or возвращает валидатор, который проверяет, что хотя бы один
+// переданный ему валидатор вернул true
+func or(funcs ...validator) validator {
+	// ...
+	return func(s string) bool {
+		for _, f := range funcs {
+			if f(s) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+// password содержит строку со значением пароля и валидатор
+type password struct {
+	value string
+	validator
+}
+
+// isValid() проверяет, что пароль корректный, согласно
+// заданному для пароля валидатору
+func (p *password) isValid() bool {
+	// ...
+	if p.validator(p.value) {
+		return true
+	}
+	return false
 }
 
 // ┌─────────────────────────────────┐
 // │ не меняйте код ниже этой строки │
 // └─────────────────────────────────┘
 
-// код, который парсит результаты игр, уже реализован
-// код, который печатает рейтинг, уже реализован
-// ваша задача - реализовать недостающие структуры и методы выше
 func main() {
-	src := readString()
-	trn := parseTournament(src)
-	rt := trn.calcRating()
-	rt.print()
-}
-
-// readString считывает и возвращает строку из os.Stdin
-func readString() string {
-	rdr := bufio.NewReader(os.Stdin)
-	str, err := rdr.ReadString('\n')
-	if err != nil && err != io.EOF {
-		log.Fatal(err)
-	}
-	return str
-}
-
-// parseTournament парсит турнир из исходной строки
-func parseTournament(s string) tournament {
-	descriptions := strings.Split(s, " ")
-	trn := tournament{}
-	for _, descr := range descriptions {
-		m := parseMatch(descr)
-		trn.addMatch(m)
-	}
-	return trn
-}
-
-// parseMatch парсит матч из фрагмента исходной строки
-func parseMatch(s string) match {
-	return match{
-		first:  team(s[0]),
-		second: team(s[1]),
-		result: result(s[2]),
-	}
-}
-
-// addMatch добавляет матч к турниру
-func (t *tournament) addMatch(m match) {
-	*t = append(*t, m)
-}
-
-// print печатает результаты турнира
-// в формате Aw Bx Cy Dz
-func (r *rating) print() {
-	var parts []string
-	for team, score := range *r {
-		part := fmt.Sprintf("%c%d", team, score)
-		parts = append(parts, part)
-	}
-	sort.Strings(parts)
-	fmt.Println(strings.Join(parts, " "))
+	var s string
+	fmt.Scan(&s)
+	// валидатор, который проверяет, что пароль содержит буквы и цифры,
+	// либо его длина не менее 10 символов
+	// validator := or(and(digits, letters), minlen(10))
+	validator := and(and(digits, letters), minlen(10))
+	p := password{s, validator}
+	fmt.Println(p.isValid())
 }
